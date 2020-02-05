@@ -1,23 +1,26 @@
 package com.example.hp.dao;
 
-import java.util.List;
 
-import com.example.hp.domian.PubHouse;
 import com.example.hp.domian.User;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserDao {
 
-	User checkUser(User user);
-	
-	User checkUserByPassword(User user);
+	@Select("select * from user where name = #{name} and password = #{password} ")
+	User find(User user);
 
-	void insertUser(User user);
-	
-	void updateUser(User user);
+	@Insert("insert into user(name,password,phone,email,sex) values(#{name},#{password},#{phone},#{email},#{sex})")
+	void insert(User user);
 
-	void insertPHouse(PubHouse pubHouse);
+	@Update("update user set name = #{name},password = #{password},phone = #{phone},email = #{email},sex = #{sex} where id  = #{id}")
+	void update(User user);
 
-	List<PubHouse> findPHouse(String phoneNumber);
-	
-	void deletePHouse(int id);
+	@Delete("delete from user where id = #{id}")
+	void  delete(int id);
+
 }

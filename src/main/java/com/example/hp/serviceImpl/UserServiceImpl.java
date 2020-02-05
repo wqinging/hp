@@ -1,62 +1,36 @@
 package com.example.hp.serviceImpl;
 
-import java.util.List;
 
-import dao.UserDao;
-import daoImpl.UserDaoImpl;
-import domian.PubHouse;
-import domian.User;
-import service.UserService;
+import com.example.hp.dao.UserDao;
+import com.example.hp.domian.User;
+import com.example.hp.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class UserServiceImpl implements UserService{
-	
-	UserDao userDao = new UserDaoImpl();
+@Service
+public class UserServiceImpl implements IUserService {
+
+	@Autowired
+	private UserDao userDao;
 
 	@Override
-	public User loginUser(User user) {
-		return userDao.checkUser(user);
+	public User login(User user) {
+		User u = userDao.find(user);
+		return u;
 	}
 
 	@Override
-	public void registerUser(User user) {
-		
-		userDao.insertUser(user);
+	public void register(User user) {
+		userDao.insert(user);
 	}
 
 	@Override
-	public void insertPHouse(PubHouse pubHouse) {
-		userDao.insertPHouse(pubHouse);
-		
+	public void update(User user) {
+		userDao.update(user);
 	}
 
 	@Override
-	public User checkUser(User user) {
-		// TODO Auto-generated method stub
-		return userDao.checkUser(user);
+	public void delete(int id) {
+		userDao.delete(id);
 	}
-
-	@Override
-	public User checkUserByPassword(User user) {
-		// TODO Auto-generated method stub
-		return userDao.checkUserByPassword(user);
-	}
-
-	@Override
-	public List<PubHouse> findPHouse(String phone) {
-		// TODO Auto-generated method stub
-		return userDao.findPHouse(phone);
-	}
-
-	@Override
-	public void deletePHouse(int id) {
-		userDao.deletePHouse(id);
-		
-	}
-
-	@Override
-	public void updateUser(User user) {
-		
-		userDao.updateUser(user);
-	}
-
 }
