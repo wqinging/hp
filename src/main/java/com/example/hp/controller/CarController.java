@@ -64,11 +64,11 @@ public class CarController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity delete(@PathVariable(value = "id") int id){
-        houseService.deleteById(id);
+        carService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "")
+    @DeleteMapping(value = "/clear")
     public ResponseEntity deleteByUserId(HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         if(user == null){

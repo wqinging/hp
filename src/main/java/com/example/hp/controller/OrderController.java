@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/car")
+@RequestMapping(value = "api/order")
 public class OrderController {
 
     @Autowired
@@ -54,7 +54,7 @@ public class OrderController {
 
 
     @PostMapping(value = "/create_by_car")
-    public ResponseEntity all(HttpServletRequest request, @RequestBody List<Integer> houseIds){
+    public ResponseEntity createByCar(HttpServletRequest request, @RequestBody List<Integer> houseIds){
         User user = (User) request.getSession().getAttribute("user");
         if(user == null){
             return ResponseEntity.ok().body("请登录");
@@ -74,7 +74,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/create")
-    public ResponseEntity all(HttpServletRequest request, @RequestBody Integer houseId){
+    public ResponseEntity create(HttpServletRequest request, Integer houseId){
         User user = (User) request.getSession().getAttribute("user");
         if(user == null){
             return ResponseEntity.ok().body("请登录");
