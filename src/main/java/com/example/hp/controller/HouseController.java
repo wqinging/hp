@@ -39,8 +39,8 @@ public class HouseController {
         for(House house1 : houses){
             HouseResponse houseResponse = new HouseResponse();
             houseResponse.setHouse(house);
-            Integer agentId = house.getAgent();
-            if(agentId == null){
+            Integer agentId = house1.getAgent();
+            if(agentId != null){
                 Agent agent = agentService.findById(agentId);
                 houseResponse.setAgent(agent);
             }
@@ -56,6 +56,13 @@ public class HouseController {
     @GetMapping(value = "/{id}")
     public ResponseEntity details(@PathVariable(value = "id") int id){
         House house = houseService.showHouseById(id);
+        HouseResponse houseResponse = new HouseResponse();
+        houseResponse.setHouse(house);
+        Integer agentId = house.getAgent();
+        if(agentId != null){
+            Agent agent = agentService.findById(agentId);
+            houseResponse.setAgent(agent);
+        }
         return ResponseEntity.ok().body(house);
     }
 
