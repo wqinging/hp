@@ -25,6 +25,9 @@ public interface CarDao {
     @Delete("delete from car where id = #{id}")
     void deleteById(int id);
 
+    @Delete("delete from car where houseId = #{houseId}")
+    void deleteByHouseId(int houseId);
+
     @Delete("delete from car where userId = #{userId}")
     void deleteByUserId(int userId);
 

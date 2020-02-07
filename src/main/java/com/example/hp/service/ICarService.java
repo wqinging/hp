@@ -14,6 +14,8 @@ public interface ICarService {
 
     void deleteById(int id);
 
+    void deleteByHouseId(int houseId);
+
     void deleteByUserId(int userId);
 
     int countByUserId(int userId);

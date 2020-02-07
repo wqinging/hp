@@ -32,6 +32,11 @@ public class CarServiceImpl implements ICarService {
     }
 
     @Override
+    public void deleteByHouseId(int houseId) {
+        carDao.deleteByHouseId(houseId);
+    }
+
+    @Override
     public void deleteByUserId(int userId) {
         carDao.deleteByUserId(userId);
     }
