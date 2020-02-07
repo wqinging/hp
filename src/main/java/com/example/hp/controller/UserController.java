@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(value = "api/user")
 public class UserController{
@@ -15,9 +17,10 @@ public class UserController{
     private IUserService userService;
 
     @GetMapping("/login")
-    public ResponseEntity login(User user){
-        User login = userService.login(user);
-        return ResponseEntity.ok().body(login);
+    public ResponseEntity login(HttpServletRequest request,User user){
+        User u = userService.login(user);
+        request.getSession().setAttribute("user",u);
+        return ResponseEntity.ok().body(u);
     }
 
     @PostMapping("/register")
@@ -38,6 +41,13 @@ public class UserController{
         userService.delete(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity logout(HttpServletRequest request){
+        request.getSession().removeAttribute("user");
+        return ResponseEntity.ok().build();
+    }
+
 
 
 }

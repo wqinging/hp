@@ -1,70 +1,88 @@
-//package com.example.hp.controller;
-//
-//import java.io.IOException;
-//import java.io.PrintWriter;
-//import java.util.List;
-//
-//import com.example.hp.domian.House;
-//import com.example.hp.domian.Page;
-//import com.example.hp.service.HouseService;
-//import com.example.hp.serviceImpl.HouseServiceImpl;
-//
-//public class HouseController extends HttpServlet {
-//
-//	private HouseService houseService= new HouseServiceImpl();
-//
-//	private static final long serialVersionUID = 1L;
-//
-//	@Override
-//	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//		String flag = req.getParameter("flag");
-//		if (flag == null) {
-//			req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
-//		}else if(flag.equals("query")){
-//			String currentPage =req.getParameter("currentPage");
-//			String regiArg = req.getParameter("regiArg");
-//            String subArg  = req.getParameter("subArg");
-//			String rentArg = req.getParameter("rentArg");
-//			String areaArg = req.getParameter("areaArg");
-//			String typeArg = req.getParameter("typeArg");
-//			int curpage = 1;
-//			if(currentPage !=null) {
-//				curpage=Integer.parseInt(currentPage);
-//			}
-//			PrintWriter out = resp.getWriter();
-//			int totalAmount = houseService.countHouse(regiArg,subArg,rentArg,areaArg,typeArg);
-//            Page page = new Page(totalAmount,8,curpage);
-//            List<House> houseList = houseService.showHouse(regiArg,subArg,rentArg,areaArg,typeArg,page);
-//            JSONObject houseData = new JSONObject();
-//			houseData.put("houseData", houseList);
-//			houseData.put("totalAmount", totalAmount);
-//			houseData.put("flag", flag);
-//			houseData.put("regiArg", regiArg);
-//			houseData.put("rentArg", rentArg);
-//			houseData.put("areaArg", areaArg);
-//			houseData.put("subArg", subArg);
-//			houseData.put("typeArg", typeArg);
-//			houseData.put("currentPage", curpage);
-//			out.print(houseData);
-//			out.flush();
-//			out.close();
-//		}else if(flag.equals("queryDetails")) {
-//			String name = req.getParameter("name");
-//			House house = houseService.showHouseByName(name);
-//			req.setAttribute("houseDemo", house);
-//			req.getRequestDispatcher("views/infoDetails.jsp").forward(req, resp);
-//		}else if(flag.equals("queryByName")) {
-//			PrintWriter out = resp.getWriter();
-//			String houseName = req.getParameter("name");
-//			List<House> list = houseService.searchHouseByName(houseName);
-//			int totalAmount = houseService.countHouseByName(houseName);
-//			JSONObject houseData = new JSONObject();
-//			houseData.put("houseData", list);
-//			houseData.put("totalAmount", totalAmount);
-//			out.print(houseData);
-//			out.flush();
-//			out.close();
-//		}
-//	}
-//
-//}
+package com.example.hp.controller;
+
+
+import com.example.hp.domian.Agent;
+import com.example.hp.domian.House;
+import com.example.hp.domian.Page;
+import com.example.hp.service.IAgentService;
+import com.example.hp.utils.FileUtils;
+import com.example.hp.vo.HouseResponse;
+import com.example.hp.vo.PageResult;
+import com.example.hp.service.IHouseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping(value = "api/house")
+public class HouseController {
+
+
+    @Autowired
+    private IHouseService houseService;
+
+    @Autowired
+    private IAgentService agentService;
+
+    @Value("${file.house.uploadPath}")
+    private String uploadPath;
+
+    @GetMapping(value = "/all")
+    public ResponseEntity getAll(House house, Page page){
+        List<House> houses = houseService.showHouse(house, page);
+        List<HouseResponse> houseResponses = new ArrayList<>();
+        for(House house1 : houses){
+            HouseResponse houseResponse = new HouseResponse();
+            houseResponse.setHouse(house);
+            Integer agentId = house.getAgent();
+            if(agentId == null){
+                Agent agent = agentService.findById(agentId);
+                houseResponse.setAgent(agent);
+            }
+            houseResponses.add(houseResponse);
+        }
+        int total = houseService.countHouse(house);
+        PageResult pageResult = new PageResult();
+        pageResult.setBody(houses);
+        pageResult.setTotal(total);
+        return ResponseEntity.ok().body(houseResponses);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity details(@PathVariable(value = "id") int id){
+        House house = houseService.showHouseById(id);
+        return ResponseEntity.ok().body(house);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity create(House house, MultipartFile file) throws Exception {
+        String upload = FileUtils.upload(file, uploadPath, file.getOriginalFilename());
+        house.setImage(upload);
+        houseService.insert(house);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity update(House house, MultipartFile file) throws Exception {
+        if(file != null){
+            String upload = FileUtils.upload(file, uploadPath, file.getOriginalFilename());
+            house.setImage(upload);
+        }
+        houseService.update(house);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable(value = "id") int id) throws Exception {
+        House house = houseService.showHouseById(id);
+        FileUtils.delete(uploadPath+"/"+house.getImage());
+        houseService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+}

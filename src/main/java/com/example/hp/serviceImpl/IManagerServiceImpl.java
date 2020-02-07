@@ -1,4 +1,4 @@
-package com.example.hp.daoImpl;
+package com.example.hp.serviceImpl;
 
 import com.example.hp.dao.ManagerDao;
 import com.example.hp.domian.Manager;
