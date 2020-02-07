@@ -53,7 +53,7 @@ public class OrderController {
     }
 
 
-    @PostMapping(value = "/create")
+    @PostMapping(value = "/create_by_car")
     public ResponseEntity all(HttpServletRequest request, @RequestBody List<Integer> houseIds){
         User user = (User) request.getSession().getAttribute("user");
         if(user == null){
@@ -70,6 +70,23 @@ public class OrderController {
             orderService.insert(order);
             carService.deleteByHouseId(houseId);
         }
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/create")
+    public ResponseEntity all(HttpServletRequest request, @RequestBody Integer houseId){
+        User user = (User) request.getSession().getAttribute("user");
+        if(user == null){
+            return ResponseEntity.ok().body("请登录");
+        }
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formatDate = format.format(date);
+        Order order = new Order();
+        order.setHouseId(houseId);
+        order.setUserId(user.getId());
+        order.setCreateTime(formatDate);
+        orderService.insert(order);
         return ResponseEntity.ok().build();
     }
 
