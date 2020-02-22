@@ -17,9 +17,3 @@ spring:
     static-locations: classpath:/static/,classpath:/templates/
 mybatis:
   type-aliases-package: com.example.hp.domain
-
-file:
-  agent:
-    uploadPath: D:/hp/file/agent
-  house:
-    uploadPath: D:/hp/file/house

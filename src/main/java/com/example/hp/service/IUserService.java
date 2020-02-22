@@ -1,10 +1,7 @@
 package com.example.hp.service;
 
 
-import com.example.hp.domian.PubHouse;
 import com.example.hp.domian.User;
-
-import java.util.List;
 
 public interface IUserService {
 

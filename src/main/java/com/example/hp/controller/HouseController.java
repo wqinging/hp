@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -28,9 +30,6 @@ public class HouseController {
 
     @Autowired
     private IAgentService agentService;
-
-    @Value("${file.house.uploadPath}")
-    private String uploadPath;
 
     @GetMapping(value = "/all")
     public ResponseEntity getAll(House house, Page page){
@@ -68,8 +67,8 @@ public class HouseController {
 
     @PostMapping("/create")
     public ResponseEntity create(House house, MultipartFile file) throws Exception {
-        String upload = FileUtils.upload(file, uploadPath, file.getOriginalFilename());
-        house.setImage(upload);
+        String image = FileUtils.fileToBase64(file);
+        house.setImage(image);
         houseService.insert(house);
         return ResponseEntity.ok().build();
     }
@@ -77,8 +76,8 @@ public class HouseController {
     @PutMapping("/update")
     public ResponseEntity update(House house, MultipartFile file) throws Exception {
         if(file != null){
-            String upload = FileUtils.upload(file, uploadPath, file.getOriginalFilename());
-            house.setImage(upload);
+            String image = FileUtils.fileToBase64(file);
+            house.setImage(image);
         }
         houseService.update(house);
         return ResponseEntity.ok().build();
@@ -86,8 +85,6 @@ public class HouseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable(value = "id") int id) throws Exception {
-        House house = houseService.showHouseById(id);
-        FileUtils.delete(uploadPath+"/"+house.getImage());
         houseService.deleteById(id);
         return ResponseEntity.ok().build();
     }
